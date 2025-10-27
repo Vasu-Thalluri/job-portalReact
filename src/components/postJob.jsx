@@ -26,7 +26,6 @@ export default function PostJob() {
         e.preventDefault();
         applyToJob();
     }
-
     useEffect(()=>{
             function getCompanies() {
                 axios.get(`${API_URL}/company/companies`).then((res)=>{
@@ -97,7 +96,7 @@ export default function PostJob() {
                     Company:<span style={{ color: "red", marginLeft: "2px" }}>*</span>
                     <select name="" id="company" value={selectedCompany} onChange={(e)=>setSelectedCompany(e.target.value)}  required>
                         <option value="">--select company--</option>
-                        {companies.map((company)=> (
+                        {companies && companies.map((company)=> (
                             <option value={company.id} key={company.id}>{company.name}</option>
                         ))}
                     </select>
@@ -144,7 +143,7 @@ export default function PostJob() {
                     </thead>
                     <tbody>
                         {jobs && jobs.map((job,i)=>(
-                            <tr>
+                            <tr key={job.id}>
                                 <td>{i+1}</td>
                                 <td>{job.userName}</td>
                                 <td>{job.company}</td>

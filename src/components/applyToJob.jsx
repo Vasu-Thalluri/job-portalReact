@@ -33,10 +33,12 @@ export default function ApplyToJob() {
 
     const user = getUserFromToken();
     //console.log(user)
+
     const locations = jobs.filter(item => item.id==selectedCompany).map(item=>item.location);
     const jobData = jobs.filter(item => item.id==selectedCompany && item.location==selectedLocation).map(item=>item.jobType);
     const role = user.role
     const visibleJobs = role === 'admin' ? applications : applications.filter((application)=>application.user_id===user.userId);
+    const isButtonDisbaled = role === 'admin'
     //console.log(visibleJobs);
     // for (let i = 0; i < applications.length; i++) {
     //     const element = applications[i];
@@ -52,6 +54,7 @@ export default function ApplyToJob() {
     const handleApplyToJob = (e)=>{
         e.preventDefault();
         applyToJob();
+        window.location.reload();
     }
 
     useEffect(()=>{
@@ -77,7 +80,7 @@ export default function ApplyToJob() {
             try{
                 const res = await axios.get(`${API_URL}/apply/application`, {});
                 const data = res.data.applications;
-                console.log(data)
+                //console.log(data)
                 getApplications(data);
             } catch(err) {
                 const errMsg = err.response.data.message;
@@ -119,7 +122,7 @@ export default function ApplyToJob() {
     }
     
     function handleEditRecord(application){
-        console.log(application);
+        //console.log(application);
         setIsEditing(true);
         setAppId(application.id);
         setSelectedCompany(application.job_id);
@@ -134,6 +137,7 @@ export default function ApplyToJob() {
     const handleUpdateAppliedJob = (e)=>{
         e.preventDefault();
         updateAppliedJob();
+        window.location.reload();
     }
     const updateAppliedJob = async()=>{
         const updatedSkills = skills.split(',').map(skill=>skill.trim()).filter(skill=>skill);
@@ -173,14 +177,11 @@ export default function ApplyToJob() {
         // }
     }
     const updateStatus = (id, status)=>{
-        console.log(`${id} and ${status}`);
+        //console.log(`${id} and ${status}`);
         axios.put(`${API_URL}/apply/${id}/status`, {status}).then((res)=>{
-            if(res){
-            console.log(res);
-        }
         }).catch((err)=>{
-            console.log(err);
-        })      
+        })
+        window.location.reload();      
     }
 
   return (
@@ -190,7 +191,7 @@ export default function ApplyToJob() {
             <div>
                 <label htmlFor="company" style={{flex: '0 0 120px', marginRight: '10px', textAlign: 'left' }}>
                     Company:<span style={{ color: "red", marginLeft: "2px" }}>*</span>
-                    <select name="" id="company" value={selectedCompany} onChange={(e)=>setSelectedCompany(e.target.value)} required>
+                    <select disabled={isButtonDisbaled} name="" id="company" value={selectedCompany} onChange={(e)=>setSelectedCompany(e.target.value)} required>
                         <option value="">--select company--</option>
                         {jobs.map((job)=>(<option value={job.id} key={job.id}>{job.company}</option>))}
                     </select>
@@ -199,7 +200,7 @@ export default function ApplyToJob() {
             <div>
                 <label htmlFor="location" style={{flex: '0 0 120px', marginRight: '10px', textAlign: 'left' }}>
                     Location:<span style={{ color: "red", marginLeft: "2px" }}>*</span>
-                    <select name="" id="location" value={selectedLocation} onChange={(e)=>setSelectedLocation(e.target.value)} required>
+                    <select disabled={isButtonDisbaled} name="" id="location" value={selectedLocation} onChange={(e)=>setSelectedLocation(e.target.value)} required>
                         <option value="">--Location--</option>
                         {locations.map((loc, i)=>(<option value={loc} key={i}>{loc}</option>))}
                     </select>
@@ -208,7 +209,7 @@ export default function ApplyToJob() {
             <div>
                 <label htmlFor="jobTitle" style={{flex: '0 0 120px', marginRight: '10px', textAlign: 'left' }}>
                     TypeOfJob:<span style={{ color: "red", marginLeft: "2px" }}>*</span>
-                    <select name="" id="jobTitle" value={selectedJobType} onChange={(e)=>{setSelectedJobType(e.target.value)}} required>
+                    <select disabled={isButtonDisbaled} name="" id="jobTitle" value={selectedJobType} onChange={(e)=>{setSelectedJobType(e.target.value)}} required>
                         <option value="">--Type of job--</option>
                         {jobData.map((job, i)=>(<option value={job} key={i}>{job}</option>))}
                     </select>
@@ -217,7 +218,7 @@ export default function ApplyToJob() {
             <div>
                 <label htmlFor="skill" style={{flex: '0 0 120px', marginRight: '10px', textAlign: 'left' }}>
                     skill:<span style={{ color: "red", marginLeft: "2px" }}>*</span>
-                    <input type="text" id='skill' value={skills} onChange={(e)=> setSkillInput(e.target.value)} placeholder='Enter skill with , seperated' required/>
+                    <input disabled={isButtonDisbaled} type="text" id='skill' value={skills} onChange={(e)=> setSkillInput(e.target.value)} placeholder='Enter skill with , seperated' required/>
                 </label>
             </div>
             {/* <div>
@@ -232,7 +233,7 @@ export default function ApplyToJob() {
             <div>
                 <label htmlFor="coverLetter" style={{flex: '0 0 120px', marginRight: '10px', textAlign: 'left' }}>
                     coverLetter:
-                    <input type="text" id='coverLetter' value={coverLetter} onChange={(e)=>setCoverLetter(e.target.value)} />
+                    <input disabled={isButtonDisbaled} type="text" id='coverLetter' value={coverLetter} onChange={(e)=>setCoverLetter(e.target.value)} placeholder='Describe strength on skills' />
                 </label>
             </div>
             {/* {user.role==='admin' &&
@@ -244,8 +245,8 @@ export default function ApplyToJob() {
             </div>
             } */}
             <div>
-                <button type='submit' style={{padding: '1px 5px', margin:'5px'}}>{isEditing ? 'Update' : 'Submit'}</button>
-                <button onClick={()=>cancelUpdate()} style={{padding: '1px 5px', margin:'5px'}}>Cancel</button>
+                <button disabled={isButtonDisbaled} type='submit' style={{padding: '1px 5px', margin:'5px'}}>{isEditing ? 'Update' : 'Submit'}</button>
+                <button disabled={isButtonDisbaled} onClick={()=>cancelUpdate()} style={{padding: '1px 5px', margin:'5px'}}>Cancel</button>
             </div>
         </form>
         {message.msg && <p style={{color: message.type==='error' ? 'red' : 'green'}}>{message.msg}</p>}

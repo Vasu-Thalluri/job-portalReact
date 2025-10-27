@@ -21,7 +21,7 @@ export default function Company() {
         try {
             const res = await axios.post(`${API_URL}/company/createCompany`, {name});
             const data = res.data
-            console.log(data.message)
+            //console.log(data.message)
             if(data) {
                 setMessage({type: 'success', msg: data.message})
                 setTimeout(() => {
@@ -29,7 +29,7 @@ export default function Company() {
                     setName('');
                 }, 2000);
             }
-            console.log(res);
+            //console.log(res);
         } catch(error) {
             const errMsg = error.response?.data.message || 'Something went wrong';
             setMessage({type: 'error', msg: errMsg});
